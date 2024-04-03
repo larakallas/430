@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Attendance</title>
+</head>
+<body>
+    <h1>View Attendance</h1>
+    
+    <form method="post" action="{{ url_for('view_attendance') }}">
+        <label for="selected_date">Select Date:</label>
+        <input type="date" id="selected_date" name="selected_date" required>
+        <button type="submit">View Attendance</button>
+    </form>
+    
+    {% if attendance_records %}
+    <h2>Attendance Records for Selected Date</h2>
+    <table>
+        <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+        {% for record in attendance_records %}
+        <tr>
+            <td>{{ record[1] }}</td>
+            <td>{{ record[2] }}</td>
+            <td>{{ record[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <a href="{{ url_for('manager_dashboard') }}">Go Back to Manager Dashboard</a>
+
+    
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

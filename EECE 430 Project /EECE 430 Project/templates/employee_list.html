@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manager Dashboard</title>
+    <style>
+        .progress-container {
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            background-color: #4caf50;
+            height: 20px;
+            color: white;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .done {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Employee List</h2>
+<ul>
+    {% for employee, tasks in employees_with_tasks %}
+        <li>{{ employee[0] }} - {{ employee[2] }}</li>  <!-- Display username and department -->
+        <ul>
+            {% for task in tasks %}
+                <li>{{ task[3] }}</li>  <!-- Display task name -->
+                <div class="progress-container">
+                    <div class="progress-bar {% if task[4] == 10 %}done{% endif %}" style="width: {{ task[4] * 10 }}%;"> <!-- Add "done" class if progress is 10 -->
+                        {{ task[4] }}/10
+                    </div>
+                </div>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</ul>
+</body>
+</html>

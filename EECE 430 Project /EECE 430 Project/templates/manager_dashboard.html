@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manager Dashboard</title>
+    <style>
+        .progress-container {
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            background-color: #4caf50;
+            height: 20px;
+            color: white;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .done {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Manager Dashboard</h1>
+    
+    <!-- Form for adding employee -->
+    <h2>Add Employee</h2>
+    <p>Click <a href="{{ url_for('add_employee') }}">here</a> to add employee.</p>
+    
+    <!-- Form for assigning task -->
+    <h2>Assign Task</h2>
+    <p>Click <a href="{{ url_for('assign_task') }}">here</a> to assign task.</p>
+    
+    <h2>Schedule Meeting</h2>
+    <p>Click <a href="{{ url_for('schedule_meeting') }}">here</a> to schedule meeting.</p>
+    <h2>View Attendance</h2>
+    <p>Click <a href="{{ url_for('view_attendance') }}">here</a> to view attendance records.</p>
+
+    
+    <h2>Employee List</h2>
+    <ul>
+        {% for employee, tasks in employees_with_tasks %}
+            <li>{{ employee[0] }} - {{ employee[2] }}</li>  <!-- Display username and department -->
+            <ul>
+                {% for task in tasks %}
+                    <li>{{ task[3] }}</li>  <!-- Display task name -->
+                    <div class="progress-container">
+                        <div class="progress-bar {% if task[4] == 10 %}done{% endif %}" style="width: {{ task[4] * 10 }}%;"> <!-- Add "done" class if progress is 10 -->
+                            {{ task[4] }}/10
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+    
+
+</body>
+</html>

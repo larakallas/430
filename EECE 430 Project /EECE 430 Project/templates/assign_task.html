@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manager Dashboard</title>
+    <style>
+        .progress-container {
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            background-color: #4caf50;
+            height: 20px;
+            color: white;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .done {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h2>Assign Task</h2>
+<form method="POST" action="{{ url_for('assign_task') }}">
+    <label for="employee_username">Employee Username:</label>
+    <input type="text" id="employee_username" name="employee_username" required><br><br>
+    <label for="task_name">Task Name:</label>
+    <input type="text" id="task_name" name="task_name" required><br><br> <!-- Ensure the name attribute matches -->
+    <button type="submit" name="assign_task">Assign Task</button>
+</form>
+</body>
+</html>
