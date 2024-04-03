@@ -14,7 +14,7 @@
     </form>
     
     {% if attendance_records %}
-    <h2>Attendance Records for Selected Date</h2>
+    <h2>Attendance Records for All Employees</h2>
     <table>
         <tr>
             <th>Employee</th>
@@ -23,16 +23,16 @@
         </tr>
         {% for record in attendance_records %}
         <tr>
+            <td>{{ record[0] }}</td>
             <td>{{ record[1] }}</td>
             <td>{{ record[2] }}</td>
-            <td>{{ record[3] }}</td>
         </tr>
         {% endfor %}
     </table>
     {% endif %}
-    <a href="{{ url_for('manager_dashboard') }}">Go Back to Manager Dashboard</a>
-
     
+    <a href="{{ url_for('manager_dashboard') }}">Go Back to Manager Dashboard</a>
+    <br>
     <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
