@@ -37,8 +37,26 @@ c.execute('''CREATE TABLE IF NOT EXISTS employee_attendance
               employee_username TEXT,
               date DATE,
               status TEXT)''')
+c.execute('''CREATE TABLE IF NOT EXISTS employee_attendance_new
+             (employee_username TEXT,
+              date DATE,
+              status TEXT,
+              PRIMARY KEY (employee_username, date))''')
 
+# Copy data from the existing table to the new table
+c.execute('''INSERT INTO employee_attendance_new (employee_username, date, status)
+             SELECT employee_username, date, status
+             FROM employee_attendance
+             GROUP BY employee_username, date''')
 
+# Drop the existing table
+c.execute('''DROP TABLE employee_attendance''')
+
+# Rename the new table to match the original table name
+c.execute('''ALTER TABLE employee_attendance_new RENAME TO employee_attendance''')
+
+# Commit the changes
+conn.commit()
 # Commit the transaction to apply the changes
 conn.commit()
 
@@ -373,25 +391,17 @@ def view_attendance():
     if 'username' in session:
         username = session['username']
         if request.method == 'POST':
-            # Assuming the selected date is passed in the form as 'selected_date'
             selected_date = request.form['selected_date']
-            # Convert the selected date string to a datetime object
             selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
-            # Fetch attendance records for the selected date
             c.execute("SELECT * FROM employee_attendance WHERE date = ?", (selected_date,))
-
             attendance_records = c.fetchall()
-
-            # Print attendance records for debugging
-            print(attendance_records)
-
             return render_template('view_attendance.html', attendance_records=attendance_records)
         else:
-            return render_template('view_attendance.html')
+            c.execute("SELECT * FROM employee_attendance")
+            attendance_records = c.fetchall()
+            return render_template('view_attendance.html', attendance_records=attendance_records)
     else:
         return redirect(url_for('login'))
-
-
 
 
 if __name__ == '__main__':
