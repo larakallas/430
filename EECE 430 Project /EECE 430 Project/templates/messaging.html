@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messaging</title>
+</head>
+
+<form method="post" action="{{ url_for('messaging') }}">
+    <label for="message_text">Message:</label>
+    <textarea name="message_text" required></textarea>
+    <br>
+    <input type="submit" value="Post Message">
+</form>
+
+<h2>Message History</h2>
+<div>
+    {% for message in messages %}
+    <p>{{ message[0] }} [{{ message[2] }}]: {{ message[1] }}</p>
+    {% endfor %}
+</div>
+
+</html>
