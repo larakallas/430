@@ -1,7 +1,7 @@
-import datetime
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify
 import sqlite3
-from datetime import datetime, date
+from datetime import date, datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a secure secret key
@@ -55,22 +55,20 @@ c.execute('''CREATE TABLE IF NOT EXISTS announcements
              announcement TEXT,
              date_created DATE,
              FOREIGN KEY (manager_username) REFERENCES managers(username))''')
+
 c.execute('''CREATE TABLE IF NOT EXISTS messages
              (message_id INTEGER PRIMARY KEY AUTOINCREMENT,
              sender_username TEXT,
-             receiver_username TEXT,
              message TEXT,
              date_sent DATE,
              FOREIGN KEY (sender_username) REFERENCES employees(username) ON DELETE CASCADE,
-             FOREIGN KEY (receiver_username) REFERENCES employees(username) ON DELETE CASCADE,
-             FOREIGN KEY (sender_username) REFERENCES managers(username) ON DELETE CASCADE,
-             FOREIGN KEY (receiver_username) REFERENCES managers(username) ON DELETE CASCADE)''')
-
+             FOREIGN KEY (sender_username) REFERENCES managers(username) ON DELETE CASCADE)''')
 # Drop the existing table
 c.execute('''DROP TABLE employee_attendance''')
 
 # Rename the new table to match the original table name
 c.execute('''ALTER TABLE employee_attendance_new RENAME TO employee_attendance''')
+
 
 # Commit the changes
 conn.commit()
@@ -78,7 +76,7 @@ conn.commit()
 conn.commit()
 
 c.execute("SELECT * FROM employee_attendance")
-c.execute("Select * from announcements")
+c.execute("Select * from messages")
 
 # Fetch all rows from the result set
 rows = c.fetchall()
@@ -87,6 +85,10 @@ rows = c.fetchall()
 for row in rows:
     print(row)
 c.execute("SELECT * FROM announcements")
+c.execute("SELECT * FROM messages")
+
+# Fetch all rows from the result set
+
 announcements = c.fetchall()
 
 # Print each announcement
@@ -130,11 +132,12 @@ def login():
             user = c.fetchone()
             if user:
                 session['username'] = username
-                return redirect(url_for('manager_dashboard'))
+                return redirect(url_for('manager_dashboard'))  # Corrected redirection to manager_dashboard
             else:
                 return render_template('login.html', error='Invalid manager credentials')
 
     return render_template('login.html')
+
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
     if 'username' in session:
@@ -465,7 +468,32 @@ def view_announcements():
         return render_template('view_announcement.html', announcements=announcements)
     else:
         return redirect(url_for('login'))
+@app.route('/messaging', methods=['GET', 'POST'])
+def messaging():
+    if 'username' in session:
+        if request.method == 'POST':
+            # Get the sender's username from the session
+            sender_username = session['username']
 
+            # Extract the message text from the form data
+            message_text = request.form['message_text']
 
+            # Get the current date
+            date_sent = datetime.now().date()
+
+            # Insert the message into the database
+            c.execute("INSERT INTO messages (sender_username, message, date_sent) VALUES (?, ?, ?)",
+                      (sender_username, message_text, date_sent))
+            conn.commit()
+
+            # Redirect to the messaging page after successfully inserting the message
+            return redirect(url_for('messaging'))
+        else:
+            # Fetch all messages from the database
+            c.execute("SELECT sender_username, message, date_sent FROM messages")
+            messages = c.fetchall()
+            return render_template('messaging.html', messages=messages)
+    else:
+        return redirect(url_for('login'))
 if __name__ == '__main__':
     app.run(debug=True)
