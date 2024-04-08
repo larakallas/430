@@ -1,0 +1,19 @@
+<!-- view_announcements.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Announcements</title>
+</head>
+<body>
+    <h1>Announcements</h1>
+    <ul>
+        {% for announcement in announcements %}
+            <li>{{ announcement[2] }} - {{ announcement[3] }}</li>
+            <!-- Display announcement text and date -->
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('employee_dashboard') }}">Go Back to Dashboard</a>
+</body>
+</html>
