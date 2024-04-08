@@ -49,6 +49,23 @@ c.execute('''INSERT INTO employee_attendance_new (employee_username, date, statu
              FROM employee_attendance
              GROUP BY employee_username, date''')
 
+c.execute('''CREATE TABLE IF NOT EXISTS announcements
+             (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             manager_username TEXT,
+             announcement TEXT,
+             date_created DATE,
+             FOREIGN KEY (manager_username) REFERENCES managers(username))''')
+c.execute('''CREATE TABLE IF NOT EXISTS messages
+             (message_id INTEGER PRIMARY KEY AUTOINCREMENT,
+             sender_username TEXT,
+             receiver_username TEXT,
+             message TEXT,
+             date_sent DATE,
+             FOREIGN KEY (sender_username) REFERENCES employees(username) ON DELETE CASCADE,
+             FOREIGN KEY (receiver_username) REFERENCES employees(username) ON DELETE CASCADE,
+             FOREIGN KEY (sender_username) REFERENCES managers(username) ON DELETE CASCADE,
+             FOREIGN KEY (receiver_username) REFERENCES managers(username) ON DELETE CASCADE)''')
+
 # Drop the existing table
 c.execute('''DROP TABLE employee_attendance''')
 
@@ -61,6 +78,7 @@ conn.commit()
 conn.commit()
 
 c.execute("SELECT * FROM employee_attendance")
+c.execute("Select * from announcements")
 
 # Fetch all rows from the result set
 rows = c.fetchall()
@@ -68,7 +86,16 @@ rows = c.fetchall()
 # Print the selected records
 for row in rows:
     print(row)
+c.execute("SELECT * FROM announcements")
+announcements = c.fetchall()
 
+# Print each announcement
+for announcement in announcements:
+    print("Announcement ID:", announcement[0])
+    print("Manager Username:", announcement[1])
+    print("Announcement:", announcement[2])
+    print("Date Created:", announcement[3])
+    print("--------------------------------------")
 
 attendance_report = []
 # Insert manager (if not exists)
@@ -400,6 +427,42 @@ def view_attendance():
             c.execute("SELECT * FROM employee_attendance")
             attendance_records = c.fetchall()
             return render_template('view_attendance.html', attendance_records=attendance_records)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/create_announcement', methods=['GET', 'POST'])
+def create_announcement():
+    if 'username' in session:
+        if request.method == 'POST':
+            # Extract the announcement text from the form data
+            announcement_text = request.form['announcement_text']
+            
+            # Get the manager's username from the session
+            manager_username = session['username']
+            
+            # Get the current date
+            date_created = datetime.now().date()
+            
+            # Insert the announcement into the database
+            c.execute("INSERT INTO announcements (manager_username, announcement, date_created) VALUES (?, ?, ?)",
+                      (manager_username, announcement_text, date_created))
+            conn.commit()
+            
+            # Redirect to the manager dashboard after successfully inserting the announcement
+            return redirect(url_for('manager_dashboard'))
+        else:
+            # Render the form to create an announcement
+            return render_template('create_announcement.html')
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/view_announcements')
+def view_announcements():
+    if 'username' in session:
+        # Fetch all announcements from the database
+        c.execute("SELECT * FROM announcements")
+        announcements = c.fetchall()
+        return render_template('view_announcement.html', announcements=announcements)
     else:
         return redirect(url_for('login'))
 
