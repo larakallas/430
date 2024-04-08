@@ -2,63 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manager Dashboard</title>
+    <title>Employee Dashboard</title>
     <style>
-        .progress-container {
-            margin-bottom: 10px;
+        .progress {
+            width: 50%; /* Adjust the width of the progress bar */
+            margin-bottom: 5px; /* Add some spacing between progress bars */
+            height: 20px; /* Adjust the height of the progress bar */
         }
         .progress-bar {
             background-color: #4caf50;
-            height: 20px;
-            color: white;
-            line-height: 20px;
+            height: 100%; /* Ensure the progress bar fills the height of the parent container */
             text-align: center;
-            border-radius: 5px;
+            color: white;
+            line-height: 20px; /* Match the height of the progress bar */
         }
-        .done {
-            background-color: #ccc;
+        .meeting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .meeting-table th, .meeting-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .meeting-table th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-    <h1>Manager Dashboard</h1>
+    <h1>Welcome, Employee!</h1>
     
-    <!-- Form for adding employee -->
-    <h2>Add Employee</h2>
-    <p>Click <a href="{{ url_for('add_employee') }}">here</a> to add employee.</p>
-    
-    <!-- Form for assigning task -->
-    <h2>Assign Task</h2>
-    <p>Click <a href="{{ url_for('assign_task') }}">here</a> to assign task.</p>
-    
-    <h2>Schedule Meeting</h2>
-    <p>Click <a href="{{ url_for('schedule_meeting') }}">here</a> to schedule meeting.</p>
-    <h2>View Attendance</h2>
-    <p>Click <a href="{{ url_for('view_attendance') }}">here</a> to view attendance records.</p>
-    <h2>Create Announcement</h2>
-    <p>Click <a href="{{ url_for('create_announcement') }}">here</a> to create an announcement.</p>
-    <h2> View Previous Announcements made</h2>
-    <p>Click <a href="{{ url_for('view_announcements') }}">here</a> to view previous announcements.</p>
-   <!--<h2>Send/receive messages</h1>
-    <p>Click <a href="{{ url_for('compose_message') }}">here</a> to access messaging.</p>
-
---> 
-
-    <h2>Employee List</h2>
+    <!-- Display assigned tasks -->
+    <h2>Assigned Tasks</h2>
     <ul>
-        {% for employee, tasks in employees_with_tasks %}
-            <li>{{ employee[0] }} - {{ employee[2] }}</li>  <!-- Display username and department -->
-            <ul>
-                {% for task in tasks %}
-                    <li>{{ task[3] }}</li>  <!-- Display task name -->
-                    <div class="progress-container">
-                        <div class="progress-bar {% if task[4] == 10 %}done{% endif %}" style="width: {{ task[4] * 10 }}%;"> <!-- Add "done" class if progress is 10 -->
-                            {{ task[4] }}/10
-                        </div>
-                    </div>
-                {% endfor %}
-            </ul>
+        {% for task in tasks %}
+            <li>{{ task[3] }}</li>  <!-- Display the task name from the fourth element of the tuple -->
+            <!-- Progress bar for task -->
+            <div class="progress">
+                <div class="progress-bar" style="width: {{ task[4] * 10 }}%">{{ task[4] }}/10</div> <!-- Display the progress from the fifth element -->
+            </div>
+            <!-- Form for updating task progress -->
+            <form method="post" action="{{ url_for('employee_dashboard') }}">
+                <input type="hidden" name="task_name" value="{{ task[3] }}"> <!-- Hidden field to pass task name -->
+                <label for="progress">Progress:</label>
+                <input type="number" id="progress" name="progress" min="0" max="10" required> <!-- Input field for progress -->
+                <button type="submit">Update Progress</button>
+            </form>
         {% endfor %}
     </ul>
+    <h2>Announcements</h2>
+    <a href="{{ url_for('view_announcements') }}">View Announcements</a>
+    <!-- Display scheduled meetings -->
+
+    <h2>Scheduled Meetings</h2>
+    <table class="meeting-table">
+        <tr>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Employee</th>
+            <th>Manager</th>
+        </tr>
+        {% for meeting in meetings %}
+        <tr>
+            <td>{{ meeting[0] }}</td>  <!-- Display the date -->
+            <td>{{ meeting[1] }}</td>  <!-- Display the start time -->
+            <td>{{ meeting[2] }}</td>  <!-- Display the end time -->
+            <td>{{ meeting[3] }}</td>  <!-- Display the employee username -->
+            <td>{{ meeting[4] }}</td>  <!-- Display the manager username -->
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <!-- Link to the attendance page -->
+    <a href="{{ url_for('submit_attendance') }}">Go to Attendance Page</a>
+    
+    <!-- Go back button -->
+    <button onclick="goBack()">Go Back</button>
+
+    <script>
+        // Function to go back to the previous page
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    
+    <!-- Logout link -->
+    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
