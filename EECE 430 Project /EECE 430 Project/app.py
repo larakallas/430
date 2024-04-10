@@ -261,15 +261,9 @@ def employee_dashboard():
         return redirect(url_for('login'))
 @app.route('/view_pdf_documents')
 def view_pdf_documents():
-    c.execute("SELECT document_path, employee_username FROM employee_documents")
-    documents = c.fetchall()
-    # Group documents by employee username
-    documents_by_employee = {}
-    for document_path, employee_username in documents:
-        if employee_username not in documents_by_employee:
-            documents_by_employee[employee_username] = []
-        documents_by_employee[employee_username].append(document_path)
-    return render_template('view_employee_documents.html', documents_by_employee=documents_by_employee)
+    # Assuming you have a function get_pdf_files() that fetches the list of available PDF documents
+    pdf_files = get_pdf_files()
+    return render_template('view_employee_documents.html', pdf_files=pdf_files)
 
 
 @app.route('/open_pdf/<filename>')
