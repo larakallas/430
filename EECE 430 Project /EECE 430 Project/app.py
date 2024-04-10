@@ -1,14 +1,38 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, send_file, url_for, session
 from flask import Flask, render_template, request, jsonify
 import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session
+import os
 from datetime import date, datetime
+from flask import url_for
 
+from flask_wtf import FlaskForm
+from wtforms import FileField
+from wtforms.validators import DataRequired
+import os
+
+from flask import send_from_directory
 app = Flask(__name__)
+
+# Define the path for the uploads directory
+uploads_dir = os.path.join(os.getcwd(), 'static', 'uploads')
+
+# Create the uploads directory if it doesn't exist
+os.makedirs(uploads_dir, exist_ok=True)
+
+# Set the UPLOAD_FOLDER configuration
+app.config['UPLOAD_FOLDER'] = uploads_dir
+
+class DocumentUploadForm(FlaskForm):
+    document = FileField('Document', validators=[DataRequired()])
+
 app.secret_key = 'your_secret_key'  # Change this to a secure secret key
 
 # Sample data for employees and managers (you can replace this with a database)
 conn = sqlite3.connect('employees.db', check_same_thread=False)
 c = conn.cursor()
+
+
 
 # Create tables if they don't exist
 c.execute('''CREATE TABLE IF NOT EXISTS employees
@@ -64,6 +88,13 @@ c.execute('''CREATE TABLE IF NOT EXISTS messages
              FOREIGN KEY (sender_username) REFERENCES employees(username) ON DELETE CASCADE,
              FOREIGN KEY (sender_username) REFERENCES managers(username) ON DELETE CASCADE)''')
 # Drop the existing table
+c.execute('''CREATE TABLE IF NOT EXISTS employee_documents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    employee_username TEXT,
+    document_path TEXT,
+    FOREIGN KEY (employee_username) REFERENCES employees(username)
+)
+''')
 c.execute('''DROP TABLE employee_attendance''')
 
 # Rename the new table to match the original table name
@@ -175,13 +206,13 @@ def change_password():
 def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
-
 @app.route('/employee_dashboard', methods=['GET', 'POST'])
 def employee_dashboard():
     if 'username' in session:
         username = session['username']
-        if request.method == 'POST':
+        form = DocumentUploadForm()  # Create an instance of the form
 
+        if request.method == 'POST':
             # Handling attendance submission
             status = request.form.get('status')  # Use .get() to avoid KeyError
             manager_username = request.form.get('username')
@@ -199,6 +230,17 @@ def employee_dashboard():
                           (new_progress, username, task_name))
                 conn.commit()
 
+            # Handling document upload
+            if form.validate_on_submit():
+                document = form.document.data  # Get the uploaded document
+                filename = document.filename  # Get the filename without securing it
+                document_path = os.path.join('static/uploads', filename)
+                document.save(document_path)  # Save the document to the specified path
+                # Store the document path in the database for the logged-in employee
+                c.execute("INSERT INTO employee_documents (employee_username, document_path) VALUES (?, ?)",
+                        (username, document_path))
+                conn.commit()
+
             # Redirect to refresh the page and prevent form resubmission
             return redirect(url_for('employee_dashboard'))
 
@@ -210,13 +252,30 @@ def employee_dashboard():
         c.execute("SELECT a.date, a.start_time, a.end_time, e.username AS employee_username, m.username AS manager_username FROM availability a INNER JOIN employees e ON a.employee_username = e.username INNER JOIN managers m ON a.manager_username = m.username WHERE a.employee_username = ? ORDER BY a.date ASC, a.start_time ASC", (username,))
         meetings = c.fetchall()
 
-        return render_template('employee_dashboard.html', tasks=tasks, meetings=meetings)
+        # Fetch uploaded documents for the current employee from the database
+        c.execute("SELECT document_path FROM employee_documents WHERE employee_username = ?", (username,))
+        employee_documents = c.fetchall()
+
+        return render_template('employee_dashboard.html', form=form, tasks=tasks, meetings=meetings, employee_documents=employee_documents)
     else:
         return redirect(url_for('login'))
+@app.route('/view_pdf_documents')
+def view_pdf_documents():
+    c.execute("SELECT document_path, employee_username FROM employee_documents")
+    documents = c.fetchall()
+    # Group documents by employee username
+    documents_by_employee = {}
+    for document_path, employee_username in documents:
+        if employee_username not in documents_by_employee:
+            documents_by_employee[employee_username] = []
+        documents_by_employee[employee_username].append(document_path)
+    return render_template('view_employee_documents.html', documents_by_employee=documents_by_employee)
 
 
-
-
+@app.route('/open_pdf/<filename>')
+def open_pdf(filename):
+    document_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    return send_file(document_path, as_attachment=False)
 
 
 @app.route('/employee_list', methods=['GET', 'POST'])
@@ -351,7 +410,6 @@ def check_availability(employee_username, manager_username, date, start_time, en
     else:
         return True  # No conflicting schedule found
 
-# Route for scheduling meetings on the manager dashboard
 @app.route('/manager_dashboard', methods=['GET', 'POST'])
 def manager_dashboard():
     if 'username' in session:
@@ -390,30 +448,32 @@ def manager_dashboard():
             # Render the manager dashboard with an error message
             c.execute("SELECT * FROM employees")
             employees = c.fetchall()
-            employees_with_tasks = []
-            for employee in employees:
-                c.execute("SELECT * FROM tasks WHERE employee_username = ?", (employee[0],))
-                tasks = c.fetchall()
-                employees_with_tasks.append((employee, tasks))
-            return render_template('manager_dashboard.html', employees_with_tasks=employees_with_tasks, error=error)
+            employees_list = [employee[0] for employee in employees]  # Fetch only the usernames
+            return render_template('manager_dashboard.html', employees_list=employees_list, error=error)
 
         else:
             # Handle GET request for the manager dashboard
             c.execute("SELECT * FROM employees")
             employees = c.fetchall()
-            employees_with_tasks = []
-            for employee in employees:
-                c.execute("SELECT * FROM tasks WHERE employee_username = ?", (employee[0],))
-                tasks = c.fetchall()
-                employees_with_tasks.append((employee, tasks))
-            return render_template('manager_dashboard.html', employees_with_tasks=employees_with_tasks)
+            employees_list = [employee[0] for employee in employees]  # Fetch only the usernames
+            return render_template('manager_dashboard.html', employees_list=employees_list)
 
     else:
         # Redirect to login if not logged in
         return redirect(url_for('login'))
 
+def get_employees_with_tasks():
+    # Replace this with your actual database query to fetch employees and their tasks
+    employees_with_tasks = []
+    # Example query: employees_with_tasks = db.query("SELECT * FROM employees_with_tasks")
+    return employees_with_tasks
 
+def get_pdf_files():
+    # Replace this with your actual code to get the list of PDF files in the uploads folder
+    pdf_files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if f.endswith('.pdf')]
+    return pdf_files
 
+    return employees_with_tasks
 
 
 @app.route('/view_attendance', methods=['GET', 'POST'])
