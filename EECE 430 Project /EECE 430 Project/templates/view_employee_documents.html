@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View PDF Documents</title>
+</head>
+<body>
+    <h1>Available PDF Documents</h1>
+    <!-- Display documents grouped by employee -->
+    {% for employee_username, documents in documents_by_employee.items() %}
+        <h2>Documents submitted by {{ employee_username }}</h2>
+        <ul>
+            {% for document_path in documents %}
+                <li>
+                    <a href="{{ url_for('open_pdf', filename=document_path) }}">{{ document_path }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
+</html>
