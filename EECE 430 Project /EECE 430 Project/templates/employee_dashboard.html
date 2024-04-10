@@ -33,30 +33,32 @@
 </head>
 <body>
     <h1>Welcome, Employee!</h1>
-    
     <!-- Display assigned tasks -->
     <h2>Assigned Tasks</h2>
     <ul>
         {% for task in tasks %}
-            <li>{{ task[3] }}</li>  <!-- Display the task name from the fourth element of the tuple -->
-            <!-- Progress bar for task -->
-            <div class="progress">
-                <div class="progress-bar" style="width: {{ task[4] * 10 }}%">{{ task[4] }}/10</div> <!-- Display the progress from the fifth element -->
-            </div>
-            <!-- Form for updating task progress -->
-            <form method="post" action="{{ url_for('employee_dashboard') }}">
-                <input type="hidden" name="task_name" value="{{ task[3] }}"> <!-- Hidden field to pass task name -->
-                <label for="progress">Progress:</label>
-                <input type="number" id="progress" name="progress" min="0" max="10" required> <!-- Input field for progress -->
-                <button type="submit">Update Progress</button>
-            </form>
+        <li>{{ task[3] }}</li> <!-- Display the task name from the fourth element of the tuple -->
+        <!-- Progress bar for task -->
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ task[4] * 10 }}%">{{ task[4] }}/10</div> <!-- Display the progress from the fifth element -->
+        </div>
+        <!-- Form for updating task progress -->
+        <form method="post" action="{{ url_for('employee_dashboard') }}">
+            <input type="hidden" name="task_name" value="{{ task[3] }}"> <!-- Hidden field to pass task name -->
+            <label for="progress">Progress:</label>
+            <input type="number" id="progress" name="progress" min="0" max="10" required> <!-- Input field for progress -->
+            <button type="submit">Update Progress</button>
+        </form>
         {% endfor %}
     </ul>
+
     <h2>Announcements</h2>
     <a href="{{ url_for('view_announcements') }}">View Announcements</a>
+
     <!-- Display scheduled meetings -->
     <h2>Send and receive messages</h2>
     <p>Click <a href="{{ url_for('messaging') }}">here</a> to view or send messages.</p>
+
     <h2>Scheduled Meetings</h2>
     <table class="meeting-table">
         <tr>
@@ -68,28 +70,50 @@
         </tr>
         {% for meeting in meetings %}
         <tr>
-            <td>{{ meeting[0] }}</td>  <!-- Display the date -->
-            <td>{{ meeting[1] }}</td>  <!-- Display the start time -->
-            <td>{{ meeting[2] }}</td>  <!-- Display the end time -->
-            <td>{{ meeting[3] }}</td>  <!-- Display the employee username -->
-            <td>{{ meeting[4] }}</td>  <!-- Display the manager username -->
+            <td>{{ meeting[0] }}</td> <!-- Display the date -->
+            <td>{{ meeting[1] }}</td> <!-- Display the start time -->
+            <td>{{ meeting[2] }}</td> <!-- Display the end time -->
+            <td>{{ meeting[3] }}</td> <!-- Display the employee username -->
+            <td>{{ meeting[4] }}</td> <!-- Display the manager username -->
         </tr>
         {% endfor %}
     </table>
-    
+
     <!-- Link to the attendance page -->
     <a href="{{ url_for('submit_attendance') }}">Go to Attendance Page</a>
-    
+
+    <!-- Upload Document -->
+    <!-- Upload Document -->
+<h2>Upload Document</h2>
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }} <!-- Include CSRF token -->
+    {{ form.document.label }} <!-- Display label for document field -->
+    {{ form.document() }} <!-- Render document input field -->
+    {{ form.document.errors }} <!-- Display validation errors for document field -->
+    <input type="submit" value="Upload">
+</form>
+
+<!-- Uploaded Documents -->
+<h2>Uploaded Documents</h2>
+{% if employee_documents %}
+<ul>
+    {% for document_path in employee_documents %}
+    <li><a href="{{ url_for('static', filename=document_path[0]) }}" target="_blank">{{ document_path[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No documents uploaded yet.</p>
+{% endif %}
+
     <!-- Go back button -->
     <button onclick="goBack()">Go Back</button>
-
     <script>
         // Function to go back to the previous page
         function goBack() {
             window.history.back();
         }
     </script>
-    
+
     <!-- Logout link -->
     <a href="{{ url_for('logout') }}">Logout</a>
 </body>
