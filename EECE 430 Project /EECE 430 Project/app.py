@@ -455,9 +455,12 @@ def manager_dashboard():
             # Handle GET request for the manager dashboard
             c.execute("SELECT * FROM employees")
             employees = c.fetchall()
-            employees_list = [employee[0] for employee in employees]  # Fetch only the usernames
+            employees_list = []
+            for employee in employees:
+                c.execute("SELECT * FROM tasks WHERE employee_username = ?", (employee[0],))
+                tasks = c.fetchall()
+                employees_list.append((employee[0], tasks))
             return render_template('manager_dashboard.html', employees_list=employees_list)
-
     else:
         # Redirect to login if not logged in
         return redirect(url_for('login'))
