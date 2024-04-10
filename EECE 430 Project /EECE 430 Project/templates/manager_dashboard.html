@@ -42,25 +42,20 @@
     <h2>Send and receive messages</h2>
     <p>Click <a href="{{ url_for('messaging') }}">here</a> to view or send messages.</p>
 
-
-
     <h2>Employee List</h2>
     <ul>
-        {% for employee, tasks in employees_with_tasks %}
-            <li>{{ employee[0] }} - {{ employee[2] }}</li>  <!-- Display username and department -->
+        {% for employee, tasks in employees_list %}
+            <li>{{ employee }}</li>  <!-- Display only the username -->
             <ul>
                 {% for task in tasks %}
-                    <li>{{ task[3] }}</li>  <!-- Display task name -->
-                    <div class="progress-container">
-                        <div class="progress-bar {% if task[4] == 10 %}done{% endif %}" style="width: {{ task[4] * 10 }}%;"> <!-- Add "done" class if progress is 10 -->
-                            {{ task[4] }}/10
-                        </div>
-                    </div>
+                    <li>{{ task[1] }}</li>  <!-- Display task name -->
                 {% endfor %}
             </ul>
         {% endfor %}
     </ul>
 
-
+    <h2>View Employee Documents</h2>
+    <p>Click <a href="{{ url_for('view_pdf_documents') }}">here</a> to view employee documents.</p>
+    
 </body>
 </html>
