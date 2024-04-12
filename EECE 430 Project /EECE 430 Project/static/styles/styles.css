@@ -1,0 +1,150 @@
+/* Resetting default styles */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+/* Global styles */
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-align: center; /* Center text content */
+}
+
+h2 {
+    font-size: 24px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    text-align: center; /* Center text content */
+}
+
+p {
+    margin-bottom: 10px;
+    text-align: center; /* Center text content */
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    display: block;
+    margin: 0 auto;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    list-style-type: none;
+    margin-left: 20px;
+    text-align: center; /* Center text content */
+}
+
+/* Login page styles */
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Align items vertically */
+    align-items: center; /* Align items horizontally */
+}
+
+.title {
+    text-align: center; /* Center text content */
+    margin-bottom: 20px;
+    font-size: 24px;
+    justify-content: center; /* Align items vertically */
+    align-items: center; /* Align items horizontally */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: center; /* Center text content */
+}
+
+input[type="text"],
+input[type="password"],
+select,
+input[type="date"],
+input[type="time"],
+button[type="submit"] {
+    display: block;
+    width: 80%;
+    padding: 8px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-sizing: border-box;
+}
+
+input[type="submit"],
+button {
+    display: block;
+    width: 60%;
+    padding: 10px;
+    margin: 0 auto;
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+button:hover {
+    margin: 0 auto;
+    background-color: #0056b3;
+}
+
+.error-message {
+    margin: 0 auto;
+    color: #ff0000;
+    margin-bottom: 10px;
+    text-align: center; /* Center text content */
+}
+
+/* App-specific styles */
+body {
+    background-color: #f4f4f4;
+}
+
+.progress-container {
+    margin-bottom: 10px;
+    text-align: center; /* Center text content */
+}
+
+.progress-bar {
+    background-color: #4caf50;
+    height: 20px;
+    color: white;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.done {
+    background-color: #ccc;
+}
+
+table {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
