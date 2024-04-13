@@ -47,9 +47,12 @@ c.execute('''CREATE TABLE IF NOT EXISTS tasks
              employee_username TEXT,
              manager_username TEXT,
              task_name TEXT,
+             start_date DATE,  -- Add start_date column here
+             end_date DATE,
              progress INTEGER,
              FOREIGN KEY (employee_username) REFERENCES employees(username),
              FOREIGN KEY (manager_username) REFERENCES managers(username))''')
+
 
 c.execute('''CREATE TABLE IF NOT EXISTS availability
              (employee_username TEXT, manager_username TEXT, date DATE, start_time TIME, end_time TIME,
@@ -362,6 +365,47 @@ def schedule_meeting():
     else:
         return redirect(url_for('login_page'))
 
+c.execute("SELECT * FROM tasks")
+
+# Fetch all rows
+tasks_data = c.fetchall()
+
+# Display the data
+for task in tasks_data:
+    print(task)
+@app.route('/calendar_events')
+def calendar_events():
+    # Fetch data from tables and format it
+    events = []
+
+    # Fetch events from the 'tasks' table
+    c.execute("SELECT task_name, start_date, end_date FROM tasks")
+    tasks = c.fetchall()
+    for task in tasks:
+        print(task)  # Add this line to debug
+        # Convert start_date to datetime object
+        start_date = datetime.strptime(task[1], '%Y-%m-%d') if task[1] else None
+        end_date = datetime.strptime(task[2], '%Y-%m-%d') if task[2] else None
+        if start_date and end_date:
+            events.append({
+                "title": task[0],
+                "start": start_date.strftime('%Y-%m-%d'),
+                "end": end_date.strftime('%Y-%m-%d')
+            })
+
+    # Fetch events from the 'availability' table
+    c.execute("SELECT date, start_time, end_time FROM availability")
+    availabilities = c.fetchall()
+    for availability in availabilities:
+        events.append({
+            "title": "Available",
+            "start": availability[0].strftime('%Y-%m-%d') + "T" + availability[1].strftime('%H:%M:%S'),  # Assuming start_time is a time column
+            "end": availability[0].strftime('%Y-%m-%d') + "T" + availability[2].strftime('%H:%M:%S')  # Assuming end_time is a time column
+        })
+
+    return jsonify(events)
+
+
 
 
 @app.route('/add_employee', methods=['GET', 'POST'])
@@ -394,15 +438,19 @@ def assign_task():
             manager_username = session['username']
             employee_username = request.form['employee_username']
             task_name = request.form['task_name']
+            start_date = request.form['start_date']  # Get start_date from the form
+            end_date = request.form['end_date']      # Get end_date from the form
 
+            # Check if the task is already assigned to the employee
             c.execute("SELECT * FROM tasks WHERE employee_username = ? AND manager_username = ? AND task_name = ?",
                       (employee_username, manager_username, task_name))
             existing_task = c.fetchone()
             if existing_task:
                 return "Task already assigned to the employee."
 
-            c.execute("INSERT INTO tasks (employee_username, manager_username, task_name, progress) VALUES (?, ?, ?, ?)",
-                      (employee_username, manager_username, task_name, 0))
+            # Insert the new task into the tasks table
+            c.execute("INSERT INTO tasks (employee_username, manager_username, task_name, start_date, end_date, progress) VALUES (?, ?, ?, ?, ?, ?)",
+                      (employee_username, manager_username, task_name, start_date, end_date, 0))
             conn.commit()
             return redirect(url_for('manager_dashboard'))
         else:
@@ -411,7 +459,6 @@ def assign_task():
             return render_template('assign_task.html')
     else:
         return redirect(url_for('login_page'))
-
 
 
 
