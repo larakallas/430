@@ -1,0 +1,14 @@
+<h2>Submit Feedback</h2>
+<form method="post">
+    <label for="employee_username">Employee:</label>
+    <select name="employee_username" id="employee_username" required>
+        {% for employee in employees %}
+        <option value="{{ employee[0] }}">{{ employee[0] }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="feedback_text">Feedback:</label>
+    <textarea name="feedback_text" id="feedback_text" rows="5" required></textarea>
+    <br>
+    <input type="submit" value="Submit Feedback">
+</form>
