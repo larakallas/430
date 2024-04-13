@@ -596,5 +596,39 @@ def messaging():
             return render_template('messaging.html', messages=messages)
     else:
         return redirect(url_for('login'))
+from flask import render_template, request, session, redirect, url_for
+
+@app.route('/delete_employee', methods=['GET', 'POST'])
+def delete_employee():
+    if 'username' in session:
+        if request.method == 'POST':
+        
+            manager_username = session['username']
+
+            # Get the username of the employee to be deleted from the form data
+            employee_username = request.form['employee_username']
+
+            # Check if the employee exists
+            c.execute("SELECT * FROM employees WHERE username = ?", (employee_username,))
+            employee = c.fetchone()
+
+            if employee:
+                c.execute("DELETE FROM employees WHERE username = ?", (employee_username,))
+                conn.commit()
+
+                
+                c.execute("DELETE FROM tasks WHERE employee_username = ?", (employee_username,))
+                conn.commit()
+
+                return redirect(url_for('manager_dashboard'))
+            else:
+                error = 'Employee does not exist.'
+                return render_template('delete_employee.html', error=error)
+        else:
+            return render_template('delete_employee.html', error=None) 
+    else:
+        error = 'You must be logged in to perform this action.'
+        return render_template('delete_employee.html', error=error)
+
 if __name__ == '__main__':
     app.run(debug=True)
