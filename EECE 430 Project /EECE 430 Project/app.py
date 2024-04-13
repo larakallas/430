@@ -66,7 +66,15 @@ c.execute('''CREATE TABLE IF NOT EXISTS employee_attendance_new
               date DATE,
               status TEXT,
               PRIMARY KEY (employee_username, date))''')
-
+c.execute('''CREATE TABLE IF NOT EXISTS employee_feedback
+             (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             manager_username TEXT,
+             employee_username TEXT,
+             feedback TEXT,
+             date_given DATE,
+             FOREIGN KEY (manager_username) REFERENCES managers(username),
+             FOREIGN KEY (employee_username) REFERENCES employees(username))''')
+conn.commit()
 # Copy data from the existing table to the new table
 c.execute('''INSERT INTO employee_attendance_new (employee_username, date, status)
              SELECT employee_username, date, status
@@ -238,7 +246,7 @@ def employee_dashboard():
                 document.save(document_path)  # Save the document to the specified path
                 # Store the document path in the database for the logged-in employee
                 c.execute("INSERT INTO employee_documents (employee_username, document_path) VALUES (?, ?)",
-                        (username, document_path))
+                          (username, document_path))
                 conn.commit()
 
             # Redirect to refresh the page and prevent form resubmission
@@ -256,7 +264,30 @@ def employee_dashboard():
         c.execute("SELECT document_path FROM employee_documents WHERE employee_username = ?", (username,))
         employee_documents = c.fetchall()
 
-        return render_template('employee_dashboard.html', form=form, tasks=tasks, meetings=meetings, employee_documents=employee_documents)
+        # Fetch feedback for the current employee from the database
+        c.execute("SELECT f.feedback, f.date_given, m.username AS manager_username FROM employee_feedback f JOIN managers m ON f.manager_username = m.username WHERE f.employee_username = ?", (username,))
+        employee_feedback = c.fetchall()
+
+        return render_template('employee_dashboard.html', form=form, tasks=tasks, meetings=meetings, employee_documents=employee_documents, employee_feedback=employee_feedback)
+    else:
+        return redirect(url_for('login'))
+@app.route('/submit_feedback', methods=['GET', 'POST'])
+def submit_feedback():
+    if 'username' in session and session['username'] in [user[0] for user in c.execute("SELECT username FROM managers").fetchall()]:
+        if request.method == 'POST':
+            manager_username = session['username']
+            employee_username = request.form['employee_username']
+            feedback_text = request.form['feedback_text']
+            date_given = datetime.now().date()
+
+            c.execute("INSERT INTO employee_feedback (manager_username, employee_username, feedback, date_given) VALUES (?, ?, ?, ?)",
+                      (manager_username, employee_username, feedback_text, date_given))
+            conn.commit()
+            return redirect(url_for('manager_dashboard'))
+        else:
+            c.execute("SELECT username FROM employees")
+            employees = c.fetchall()
+            return render_template('submit_feedback.html', employees=employees)
     else:
         return redirect(url_for('login'))
 @app.route('/view_pdf_documents')
@@ -271,7 +302,20 @@ def open_pdf(filename):
     document_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     return send_file(document_path, as_attachment=False)
 
-
+@app.route('/view_feedback', methods=['GET'])
+def view_feedback():
+    if 'username' in session:
+        username = session['username']
+        if username in [user[0] for user in c.execute("SELECT username FROM managers").fetchall()]:
+            c.execute("SELECT e.username, f.feedback, f.date_given FROM employees e JOIN employee_feedback f ON e.username = f.employee_username")
+            feedback_data = c.fetchall()
+            return render_template('view_feedback.html', feedback_data=feedback_data)
+        else:
+            c.execute("SELECT f.feedback, f.date_given, m.username FROM employee_feedback f JOIN managers m ON f.manager_username = m.username WHERE f.employee_username = ?", (username,))
+            feedback_data = c.fetchall()
+            return render_template('view_feedback.html', feedback_data=feedback_data)
+    else:
+        return redirect(url_for('login'))
 @app.route('/employee_list', methods=['GET', 'POST'])
 def employee_list():
     if 'username' in session:  # Assuming 'username' is the key for the logged-in user in the session
