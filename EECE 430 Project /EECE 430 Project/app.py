@@ -370,41 +370,17 @@ c.execute("SELECT * FROM tasks")
 # Fetch all rows
 tasks_data = c.fetchall()
 
-# Display the data
-for task in tasks_data:
-    print(task)
-@app.route('/calendar_events')
-def calendar_events():
-    # Fetch data from tables and format it
-    events = []
+@app.route('/view_calendar', methods=['GET', 'POST'])
+def view_calendar():
+    if 'username' in session:
+        # Assuming your database connection and cursor are defined as 'conn' and 'c'
+        c.execute("SELECT * FROM availability WHERE employee_username = ?", (session['username'],))
+        meetings_data = c.fetchall()  # Fetch all meetings for the logged-in employee
 
-    # Fetch events from the 'tasks' table
-    c.execute("SELECT task_name, start_date, end_date FROM tasks")
-    tasks = c.fetchall()
-    for task in tasks:
-        print(task)  # Add this line to debug
-        # Convert start_date to datetime object
-        start_date = datetime.strptime(task[1], '%Y-%m-%d') if task[1] else None
-        end_date = datetime.strptime(task[2], '%Y-%m-%d') if task[2] else None
-        if start_date and end_date:
-            events.append({
-                "title": task[0],
-                "start": start_date.strftime('%Y-%m-%d'),
-                "end": end_date.strftime('%Y-%m-%d')
-            })
-
-    # Fetch events from the 'availability' table
-    c.execute("SELECT date, start_time, end_time FROM availability")
-    availabilities = c.fetchall()
-    for availability in availabilities:
-        events.append({
-            "title": "Available",
-            "start": availability[0].strftime('%Y-%m-%d') + "T" + availability[1].strftime('%H:%M:%S'),  # Assuming start_time is a time column
-            "end": availability[0].strftime('%Y-%m-%d') + "T" + availability[2].strftime('%H:%M:%S')  # Assuming end_time is a time column
-        })
-
-    return jsonify(events)
-
+        # Now you can pass the meetings_data to your template for rendering
+        return render_template('view_calendar.html', meetings_data=meetings_data)
+    else:
+        return redirect(url_for('manager_dashboard'))
 
 
 
