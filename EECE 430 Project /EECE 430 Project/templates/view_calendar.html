@@ -2,35 +2,180 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar App</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet">
-    <style>
-        #calendar {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesc.css') }}">
+    <title>View Calendar</title>
 </head>
 <body>
-
-<div id="calendar"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: '/calendar_events' // Fetch events from this route
+    <h1>Calendar</h1>
+    <ul><div id="calendar"></div>
+    </ul>
+    <div class="container">
+        <div class="calendar">
+          <div class="front">
+            <div class="current-date">
+              <!-- Update current date dynamically -->
+              <h1 id="current-date"></h1>
+              <h1 id="current-month"></h1> 
+            </div>
+  
+            <div class="current-month">
+              <ul class="week-days">
+                <li>MON</li>
+                <li>TUE</li>
+                <li>WED</li>
+                <li>THU</li>
+                <li>FRI</li>
+                <li>SAT</li>
+                <li>SUN</li>
+              </ul>
+  
+              <div class="weeks">
+                <div class="first">
+                  <!-- Days of the month -->
+                  <span class="last-month">28</span>
+                  <span class="last-month">29</span>
+                  <span class="last-month">30</span>
+                  <span class="last-month">31</span>
+                  <span>01</span>
+                  <span>02</span>
+                  <span>03</span>
+                </div>
+  
+                <div class="second">
+                  <span>04</span>
+                  <span>05</span>
+                  <span class="event">06</span>
+                  <span>07</span>
+                  <span>08</span>
+                  <span>09</span>
+                  <span>10</span>
+                </div>
+  
+                <div class="third">
+                  <span>11</span>
+                  <span>12</span>
+                  <span>13</span>
+                  <span>14</span>
+                  <span class="active">15</span>
+                  <span>16</span>
+                  <span>17</span>
+                </div>
+  
+                <div class="fourth">
+                  <span>18</span>
+                  <span>19</span>
+                  <span>20</span>
+                  <span>21</span>
+                  <span>22</span>
+                  <span>23</span>
+                  <span>24</span>
+                </div>
+  
+                <div class="fifth">
+                  <span>25</span>
+                  <span>26</span>
+                  <span>27</span>
+                  <span>28</span>
+                  <span>29</span>
+                  <span>30</span>
+                  <span>31</span>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="back">
+            <input placeholder="What's the event?">
+            <div class="info">
+              <div class="date">
+                <p class="info-date">
+                Date: <span id="event-date">Jan 15th, 2016</span>
+                </p>
+                <p class="info-time">
+                  Time: <span>6:35 PM</span>
+                </p>
+              </div>
+              <div class="address">
+                <p>
+                  Address: <span>129 W 81st St, New York, NY</span>
+                </p>
+              </div>
+              <div class="observations">
+                <p>
+                  Observations: <span>Be there 15 minutes earlier</span>
+                </p>
+              </div>
+            </div>
+  
+            <div class="actions">
+              <button class="save">
+                Save <i class="ion-checkmark"></i>
+              </button>
+              <button class="dismiss">
+                Dismiss <i class="ion-android-close"></i>
+              </button>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    <a href="{{ url_for('manager_dashboard') }}">Go Back to Dashboard</a>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var app = {
+                settings: {
+                    container: $('.calendar'),
+                    calendar: $('.front'),
+                    days: $('.weeks span'),
+                    form: $('.back'),
+                    input: $('.back input'),
+                    buttons: $('.back button')
+                },
+            
+                init: function() {
+                    instance = this;
+                    settings = this.settings;
+                    this.updateDate(); // Update date initially
+                    this.bindUIActions();
+                },
+            
+                updateDate: function() {
+                    var currentDate = new Date();
+                    var daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+                    var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    var day = currentDate.getDate();
+                    var dayOfWeek = daysOfWeek[currentDate.getDay()];
+                    var month = monthNames[currentDate.getMonth()];
+                    var year = currentDate.getFullYear();
+                    $('#current-date').text(dayOfWeek + ' ' + day);
+                    $('#current-month').text(month + ' ' + year);
+                },
+            
+                swap: function(currentSide, desiredSide) {
+                    settings.container.toggleClass('flip');
+                
+                    currentSide.fadeOut(900);
+                    currentSide.hide();
+                    desiredSide.show();
+                
+                },
+            
+                bindUIActions: function() {
+                    settings.days.on('click', function(){
+                        instance.swap(settings.calendar, settings.form);
+                        settings.input.focus();
+                    });
+                
+                    settings.buttons.on('click', function(){
+                        instance.swap(settings.form, settings.calendar);
+                    });
+                }
+            }
+            
+            app.init();
         });
-
-        calendar.render();
-    });
-</script>
-
+    </script>
+    
 </body>
 </html>
-
