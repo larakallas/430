@@ -4,20 +4,68 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <title>Messaging</title>
+    <style>
+        body {
+            background: #eee;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        * {
+            box-sizing: inherit;
+        }
+
+        .container {
+            width: 400px;
+            margin: 0 auto;
+        }
+
+        .message-history {
+            margin-bottom: 20px;
+        }
+
+        .embed-submit-field {
+            display: flex;
+        }
+
+        .embed-submit-field input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .embed-submit-field button {
+            background-color: #37C88D;
+            color: #fff;
+            border: none;
+            width: 25%;
+            border-radius: 0 3px 3px 0;
+            padding: 10px 15px; /* Adjusted padding to make the button smaller */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .embed-submit-field button:hover {
+            background-color: #2e9e78;
+        }
+    </style>
 </head>
+<body>
+    <div class="container">
+        <h2 class="message-history">Message History</h2>
+        <div>
+            {% for message in messages %}
+            <p>{{ message[0] }} [{{ message[2] }}]: {{ message[1] }}</p>
+            {% endfor %}
+        </div>
 
-<form method="post" action="{{ url_for('messaging') }}">
-    <label for="message_text">Message:</label>
-    <textarea name="message_text" required></textarea>
-    <br>
-    <input type="submit" value="Post Message">
-</form>
-
-<h2>Message History</h2>
-<div>
-    {% for message in messages %}
-    <p>{{ message[0] }} [{{ message[2] }}]: {{ message[1] }}</p>
-    {% endfor %}
-</div>
-
+        <form method="post" action="{{ url_for('messaging') }}">
+            <div class="embed-submit-field">
+                <input type="text" name="message_text" required placeholder="Message">
+                <button type="submit">Send</button>
+            </div>
+        </form>
+    </div>
+</body>
 </html>
