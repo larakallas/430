@@ -22,7 +22,7 @@ This is a simple Employee Management System built with Flask, SQLite, and WTForm
 ## Installation
 
 1. Clone the repository to your local machine:
-
+Open the command line (CMD) and input:
 ```bash
 git clone https://github.com/larakallas/430/
 ```
@@ -36,13 +36,18 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-Run the application:
+You should click on the folder you installed and unzip it.
 
+After that, keep clicking on the folder to see app.py
+
+Run the application:
+Open the command line (CMD) and input the following:
 ```bash
 python app.py
 ```
 
 Open your browser and navigate to `http://127.0.0.1:5000` to access the application.
+Or CTRL + Click on the generated `http://127.0.0.1:5000` in the command line.
 
 ## Database Setup
 
