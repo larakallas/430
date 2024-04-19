@@ -31,6 +31,8 @@ a {
     text-decoration: none;
     display: block;
     margin: 0 auto;
+    margin-bottom: 10px;
+    text-align: center; /* Center text content */
 }
 
 a:hover {
@@ -68,8 +70,29 @@ ul {
 label {
     display: block;
     margin-bottom: 5px;
-    text-align: center; /* Center text content */
+    text-align: center;
 }
+textarea {
+    display: block;
+    width: 60%;
+    padding: 8px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-sizing: border-box;
+}
+input {
+    display: block;
+    width: 60%;
+    padding: 8px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-sizing: border-box;
+}
+
         /* CSS styles for buttons and dropdown */
         button[type="submit"]{
             padding: 0.6em 2em;
