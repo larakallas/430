@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h2>Upload Document</h2>
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }} <!-- Include CSRF token -->
+    {{ form.document.label }} <!-- Display label for document field -->
+    {{ form.document() }} <!-- Render document input field -->
+    {{ form.document.errors }} <!-- Display validation errors for document field -->
+    <input type="submit" value="Upload">
+</form>
+
+<!-- Uploaded Documents -->
+<h2>Uploaded Documents</h2>
+{% if employee_documents %}
+<ul>
+    {% for document_path in employee_documents %}
+    <li><a href="{{ url_for('static', filename=document_path[0]) }}" target="_blank">{{ document_path[0] }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No documents uploaded yet.</p>
+{% endif %}
+</body>
+</html>

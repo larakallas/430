@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h2>Assigned Tasks</h2>
+    <ul>
+        {% for task in tasks %}
+        <li>{{ task[3] }}</li> <!-- Display the task name from the fourth element of the tuple -->
+        <!-- Progress bar for task -->
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ task[4] * 10 }}%">{{ task[4] }}/10</div> <!-- Display the progress from the fifth element -->
+        </div>
+        <!-- Form for updating task progress -->
+        <form method="post" action="{{ url_for('employee_dashboard') }}">
+            <input type="hidden" name="task_name" value="{{ task[3] }}"> <!-- Hidden field to pass task name -->
+            <label for="progress">Progress:</label>
+            <input type="number" id="progress" name="progress" min="0" max="10" required> <!-- Input field for progress -->
+            <button type="submit">Update Progress</button>
+        </form>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -6,8 +6,8 @@
     <title>Login</title>
 </head>
 <body>
-<body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
+    <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;"></body>
     <h1>Welcome to the Attendance System</h1>
-    <a href="{{ url_for('login') }}">Login</a>
+    <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
 </body>
 </html>

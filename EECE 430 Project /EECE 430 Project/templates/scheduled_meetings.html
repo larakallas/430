@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h2>Scheduled Meetings</h2>
+<table class="meeting-table">
+    <tr>
+        <th>Date</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Employee</th>
+        <th>Manager</th>
+    </tr>
+    {% for meeting in meetings %}
+    <tr>
+        <td>{{ meeting[0] }}</td> <!-- Display the date -->
+        <td>{{ meeting[1] }}</td> <!-- Display the start time -->
+        <td>{{ meeting[2] }}</td> <!-- Display the end time -->
+        <td>{{ meeting[3] }}</td> <!-- Display the employee username -->
+        <td>{{ meeting[4] }}</td> <!-- Display the manager username -->
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

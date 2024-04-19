@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <title>Employee Dashboard</title>
+</head>
+<body>
+
+<h2>Feedback from Managers</h2>
+{% if employee_feedback %}
+<ul>
+    {% for feedback, date_given, manager_username in employee_feedback %}
+    <li>
+        <p><strong>Feedback from {{ manager_username }}:</strong> {{ feedback }}</p>
+        <p>Date Given: {{ date_given }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No feedback received yet.</p>
+{% endif %}
+</body>
+</html>
