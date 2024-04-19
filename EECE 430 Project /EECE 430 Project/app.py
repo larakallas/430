@@ -1,17 +1,11 @@
-from flask import Flask, render_template, request, redirect, send_file, url_for, session
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, send_file, url_for, session, jsonify,send_from_directory
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, session
 import os
 from datetime import date, datetime
-from flask import url_for
-
 from flask_wtf import FlaskForm
 from wtforms import FileField
 from wtforms.validators import DataRequired
-import os
 
-from flask import send_from_directory
 app = Flask(__name__)
 
 # Define the path for the uploads directory
