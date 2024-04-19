@@ -1,0 +1,3 @@
+- **Lara Kallas** ([@larakallas](https://github.com/larakallas))
+- **Charbel Toumieh** ([@CharbelTo](https://github.com/CharbelTo))
+- **Charbel Ghanime** ([@Charbelghanime](https://github.com/Charbelghanime))
