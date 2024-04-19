@@ -53,6 +53,4 @@ Or CTRL + Click on the generated `http://127.0.0.1:5000` in the command line.
 
 The application uses SQLite for the database. The database tables are created automatically on first run.
 
-## Contributing
 
-Contributions are welcome! Please create a pull request for any improvements or bug fixes.
