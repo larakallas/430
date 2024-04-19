@@ -53,7 +53,25 @@ c.execute('''CREATE TABLE IF NOT EXISTS tasks
              FOREIGN KEY (employee_username) REFERENCES employees(username),
              FOREIGN KEY (manager_username) REFERENCES managers(username))''')
 
+c.execute('''CREATE TABLE IF NOT EXISTS courses (
+    course_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_name TEXT NOT NULL,
+    description TEXT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    employee_username TEXT,
+    FOREIGN KEY (employee_username) REFERENCES employees(username)
+)
+''')
+c.execute('''DROP TABLE IF EXISTS course_videos''')
 
+c.execute('''CREATE TABLE course_videos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER,
+    video_title TEXT,
+    video_url TEXT,
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+)''')
 c.execute('''CREATE TABLE IF NOT EXISTS availability
              (employee_username TEXT, manager_username TEXT, date DATE, start_time TIME, end_time TIME,
              PRIMARY KEY (employee_username, manager_username, date),
@@ -274,6 +292,64 @@ def employee_dashboard():
         return render_template('employee_dashboard.html', form=form, tasks=tasks, meetings=meetings, employee_documents=employee_documents, employee_feedback=employee_feedback)
     else:
         return redirect(url_for('login'))
+    
+@app.route('/scheduled_meetings', methods=['GET', 'POST'])
+def scheduled_meetings():
+    if 'username' in session:
+        username = session['username']
+        if request.method == 'POST':
+            selected_date = request.form['selected_date']
+            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+            c.execute("SELECT * FROM availability WHERE employee_username = ? AND date = ?", (username, selected_date))
+            meetings = c.fetchall()
+            return render_template('scheduled_meetings.html', meetings=meetings)
+        else:
+            c.execute("SELECT * FROM availability WHERE employee_username = ?", (username,))
+            meetings = c.fetchall()
+            return render_template('scheduled_meetings.html', meetings=meetings)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/view_tasks', methods=['GET', 'POST'])
+def view_tasks():
+    if 'username' in session:
+        username = session['username']
+        if request.method == 'POST':
+            task_name = request.form['task_name']
+            new_progress = int(request.form['progress'])
+            c.execute("UPDATE tasks SET progress = ? WHERE employee_username = ? AND task_name = ?", (new_progress, username, task_name))
+            conn.commit()
+            return redirect(url_for('employee_dashboard'))
+        else:
+            c.execute("SELECT * FROM tasks WHERE employee_username = ?", (username,))
+            tasks = c.fetchall()
+            return render_template('view_tasks.html', tasks=tasks)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/upload_document', methods=['GET', 'POST'])
+def upload_document():
+    if 'username' in session:
+        username = session['username']
+        if request.method == 'POST':
+            document = request.files['document']
+            document.save(os.path.join(app.config['UPLOAD_FOLDER'], document.filename))
+            c.execute("INSERT INTO employee_documents (employee_username, document_path) VALUES (?, ?)",
+                      (username, document.filename))
+            conn.commit()
+            return redirect(url_for('employee_dashboard'))
+        else:
+            return render_template('upload_document.html')
+    else:
+        return redirect(url_for('login'))
+        
+    
+
+
+
+
+
+
 @app.route('/submit_feedback', methods=['GET', 'POST'])
 def submit_feedback():
     if 'username' in session and session['username'] in [user[0] for user in c.execute("SELECT username FROM managers").fetchall()]:
@@ -652,6 +728,99 @@ def delete_employee():
     else:
         error = 'You must be logged in to perform this action.'
         return render_template('delete_employee.html', error=error)
+
+
+
+@app.route('/courses')
+def list_courses():
+    if 'username' in session:
+        # Fetch all courses from the database
+        c.execute("SELECT * FROM courses")
+        courses = c.fetchall()
+        return render_template('courses.html', courses=courses)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/course/<int:course_id>')
+def view_course(course_id):
+    if 'username' in session:
+        # Fetch the details of the selected course from the database
+        c.execute("SELECT * FROM courses WHERE course_id = ?", (course_id,))
+        course = c.fetchone()
+        if course:
+            return render_template('course_details.html', course=course)
+        else:
+            return "Course not found."
+    else:
+        return redirect(url_for('login'))
+from wtforms import Form, StringField, TextAreaField, DateField, SelectField, validators
+
+class CourseForm(FlaskForm):
+    course_name = StringField('Course Name', validators=[DataRequired()])
+    description = TextAreaField('Description')
+    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    employee_username = SelectField('Assign to Employee', coerce=int, validators=[DataRequired()])
+    video_titles = StringField('Video Title')
+    video_urls = StringField('Video URL')
+from flask import request
+
+from flask import render_template
+
+from flask import Flask, render_template, request, redirect, url_for, session
+
+
+@app.route('/create_course', methods=['GET', 'POST'])
+def create_course():
+    form = CourseForm(request.form)
+    
+    if 'username' in session:
+        if request.method == 'POST':
+            manager_username = session['username']
+            course_name = form.course_name.data
+            description = form.description.data
+            start_date = form.start_date.data
+            end_date = form.end_date.data
+            employee_username = form.employee_username.data
+
+            # Save uploaded videos to a folder
+            video_titles = request.form.getlist('video_titles[]')
+            video_urls = request.form.getlist('video_urls[]')
+            
+            # Assuming you have a table 'courses' with appropriate columns
+            c.execute("INSERT INTO courses (course_name, description, start_date, end_date, employee_username) VALUES (?, ?, ?, ?, ?)",
+                      (course_name, description, start_date, end_date, employee_username))
+            course_id = c.lastrowid  # Get the ID of the inserted course
+            
+            # Insert video information into a 'course_videos' table
+            for title, url in zip(video_titles, video_urls):
+                c.execute("INSERT INTO course_videos (course_id, video_title, video_url) VALUES (?, ?, ?)",
+                          (course_id, title, url))
+                conn.commit()
+
+            return redirect(url_for('manager_dashboard'))
+        
+        else:
+            # Fetch the list of employees from your database
+            c.execute("SELECT username FROM employees")
+            employees = c.fetchall()
+            # Render the form to create a course along with the list of employees
+            return render_template('create_course.html', form=form, employees=employees)
+    else:
+        return redirect(url_for('login'))
+
+
+
+@app.route('/employee_courses')
+def employee_courses():
+    if 'username' in session:
+        username = session['username']
+        # Fetch courses assigned to the current employee from the database
+        c.execute("SELECT * FROM courses WHERE employee_username = ?", (username,))
+        courses = c.fetchall()
+        return render_template('employee_courses.html', courses=courses)
+    else:
+        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
