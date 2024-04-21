@@ -1,20 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-    <title>Submit Attendance</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Submit Attendance</title>
 </head>
 <body>
-    <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
+  <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
     <h1>Submit Attendance</h1>
-    <form method="post" action="{{ url_for('submit_attendance') }}">
-        <label for="status">Attendance Status:</label>
-        <select id="status" name="status" required>
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-        </select>
-        <button type="submit">Submit</button>
+    <form id="attendance-form" method="post" action="{{ url_for('submit_attendance') }}">
+      <label for="status">Attendance Status:</label>
+      <select id="status" name="status" required>
+        <option value="Present">Present</option>
+        <option value="Absent">Absent</option>
+      </select>
+      <button type="submit">Submit</button>
     </form>
-</body>
+
+    <script>
+      $(document).ready(function() {
+        $("#attendance-form").submit(function(event) {
+          event.preventDefault(); // Prevent default form submission
+
+          $.ajax({
+            url: "/submit_attendance",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(data) {
+              if (data.message) {
+                // Create and display the popup content
+                var popupHtml = `
+                  <div id="attendance-popup">
+                    <h2>Attendance Submitted</h2>
+                    <p>${data.message}</p>
+                    <button id="close-popup">Close</button>
+                  </div>
+                `;
+                $("body").append(popupHtml);
+
+                // Add CSS styling for the popup (optional)
+
+                $("#close-popup").click(function() {
+                  $("#attendance-popup").remove();
+                });
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              alert("Attendance already submitted for today. ");
+            }
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
