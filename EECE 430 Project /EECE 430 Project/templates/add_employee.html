@@ -19,6 +19,18 @@
       <button type="submit">Add Employee</button>
     </form>
 
+    <div id="success-popup" style="display: none;">
+      <h2>Success</h2>
+      <p>Employee added successfully!</p>
+      <button id="close-success-popup">Close</button>
+    </div>
+
+    <div id="username-popup" style="display: none;">
+      <h2>Error</h2>
+      <p id="popup-message"></p>
+      <button id="close-popup">Close</button>
+    </div>
+
     <script>
       $(document).ready(function() {
         $("#add-employee-form").submit(function(event) {
@@ -29,30 +41,28 @@
             type: "POST",
             data: $(this).serialize(),
             success: function(data) {
+              // Check if there is an error message
               if (data.message) {
-                // Create and display the popup content
-                var popupHtml = `
-                  <div id="username-popup">
-                    <h2>Error</h2>
-                    <p>${data.message}</p>
-                    <button id="close-popup">Close</button>
-                  </div>
-                `;
-                $("body").append(popupHtml);
-
-                // Add CSS styling for the popup (optional)
-
-                $("#close-popup").click(function() {
-                  $("#username-popup").remove();
-                });
+                // Display the error popup
+                $("#popup-message").text(data.message);
+                $("#username-popup").show();
               } else {
-                // User added successfully (redirect handled by Flask)
+                // Display the success popup
+                $("#success-popup").show();
               }
             },
             error: function(jqXHR, textStatus, errorThrown) {
               alert("Error adding employee: " + textStatus + errorThrown);
             }
           });
+        });
+
+        $("#close-popup").click(function() {
+          $("#username-popup").hide();
+        });
+
+        $("#close-success-popup").click(function() {
+          $("#success-popup").hide();
         });
       });
     </script>
