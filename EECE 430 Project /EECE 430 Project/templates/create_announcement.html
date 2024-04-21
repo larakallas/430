@@ -1,17 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-    <title>Create Announcement</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <title>Create Announcement</title>
 </head>
 <body>
-    <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;"></body>
-    <h1>Create Announcement</h1>
-    <form action="{{ url_for('create_announcement') }}" method="POST">
-        <label for="announcement_text">Announcement Text:</label><br>
-        <textarea id="announcement_text" name="announcement_text" rows="4" cols="50"></textarea><br><br>
-        <input type="submit" value="Submit">
-    </form>
+  <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;"></body>
+  <h1>Create Announcement</h1>
+  <form action="{{ url_for('create_announcement') }}" method="POST">
+    <label for="announcement_text">Announcement Text:</label><br>
+    <textarea id="announcement_text" name="announcement_text" rows="4" cols="50"></textarea><br><br>
+    <input type="submit" value="Submit">
+    <input type="hidden" id="submission-result" name="submission-result">  </form>
+
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="flash {{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <script>
+    var form = document.querySelector("#create-announcement-form");
+    form.addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Submit the form normally
+      this.submit();
+    });
+
+    // Check for success message after form submission (optional)
+    var successMessage = document.querySelector('.flash.success');
+    if (successMessage) {
+      // Update hidden field value for redirection
+      document.getElementById("submission-result").value = "success";
+    }
+  </script>
 </body>
 </html>
