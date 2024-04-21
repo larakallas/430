@@ -1,21 +1,39 @@
-<!-- view_announcements.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <title>View Announcements</title>
+    <style>
+        .announcement-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .announcement-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .announcement-date {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
     <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
     <h1>Announcements</h1>
-    <ul>
-        {% for announcement in announcements %}
-            <li>{{ announcement[2] }} - {{ announcement[3] }}</li>
-            <!-- Display announcement text and date -->
-        {% endfor %}
-    </ul>
+    {% for announcement in announcements %}
+        <div class="announcement-container">
+            <div class="announcement-title">{{ announcement[2] }}</div>
+            <div class="announcement-date">{{ announcement[3] }}</div>
+            <div class="announcement-text">{{ announcement[1] }}</div>
+        </div>
+    {% endfor %}
     <a href="{{ url_for('employee_dashboard') }}">Go Back to Dashboard</a>
 </body>
 </html>
