@@ -13,7 +13,7 @@
         <li>{{ task[3] }}</li> <!-- Display the task name from the fourth element of the tuple -->
         <!-- Progress bar for task -->
         <div class="progress">
-            <div class="progress-bar" style="width: {{ task[4] * 10 }}%">{{ task[4] }}/10</div> <!-- Display the progress from the fifth element -->
+            <div class="progress-bar" style="width: {{ task[5] * 10 }}%">{{ task[6] }}/10</div> <!-- Display the progress from the fifth element -->
         </div>
         <!-- Form for updating task progress -->
         <form method="post" action="{{ url_for('employee_dashboard') }}">
