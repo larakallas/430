@@ -1,71 +1,113 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-    <title>Manager Dashboard</title>
-    <style>
-        .progress-container {
-            margin-bottom: 10px;
-        }
-        .progress-bar {
-            background-color: #4caf50;
-            height: 20px;
-            color: white;
-            line-height: 20px;
-            text-align: center;
-            border-radius: 5px;
-        }
-        .done {
-            background-color: #ccc;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Manager Dashboard</title>
+  <style>
+    .progress-container {
+      margin-bottom: 10px;
+    }
+    .progress-bar {
+      background-color: #4caf50;
+      height: 20px;
+      color: white;
+      line-height: 20px;
+      text-align: center;
+      border-radius: 5px;
+    }
+    .done {
+      background-color: #ccc;
+    }
+  </style>
 </head>
-<body> 
-    <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
+<body>
+  <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
     <h2>Schedule Meeting</h2>
-    <form method="POST" action="{{ url_for('schedule_meeting') }}">
-        <label for="employee_username">Employee Username:</label>
-        <input type="text" id="employee_username" name="employee_username" required><br><br>
-        <label for="meeting_date">Meeting Date:</label>
-        <input type="date" id="meeting_date" name="meeting_date" required><br><br>
-        <label for="start_time">Start Time:</label>
-        <input type="time" id="start_time" name="start_time" required><br><br>
-        <label for="end_time">End Time:</label>
-        <input type="time" id="end_time" name="end_time" required><br><br>
-        <button type="submit" name="schedule_meeting">Schedule Meeting</button>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="flash {{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form id="schedule-meeting-form" method="POST" action="{{ url_for('schedule_meeting') }}">
+      <label for="employee_username">Employee Username:</label>
+      <input type="text" id="employee_username" name="employee_username" required><br><br>
+      <label for="meeting_date">Meeting Date:</label>
+      <input type="date" id="meeting_date" name="meeting_date" required><br><br>
+      <label for="start_time">Start Time:</label>
+      <input type="time" id="start_time" name="start_time" required><br><br>
+      <label for="end_time">End Time:</label>
+      <input type="time" id="end_time" name="end_time" required><br><br>
+      <button type="submit" name="schedule_meeting">Schedule Meeting</button>
     </form>
 
 
-<h2>Scheduled Meetings</h2>
-<table>
-  <tr>
-    <th>Date</th>
-    <th>Start Time</th>
-    <th>End Time</th>
-    <th>Employee</th>
-    <th>Manager</th>
-  </tr>
-  {% for meeting in scheduled_meetings %}
-  <tr>
-    <td>
-        {% if meeting[0] is string %}
+    <h2>Scheduled Meetings</h2>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Employee</th>
+        <th>Manager</th>
+      </tr>
+      {% for meeting in scheduled_meetings %}
+      <tr>
+        <td>
+          {% if meeting[0] is string %}
             {{ meeting[0] }}
-        {% else %}
+          {% else %}
             {{ meeting[0].strftime('%Y-%m-%d') }}
-        {% endif %}
-    </td>
-    <td>{{ meeting[1] }}</td>  <!-- Start Time -->
-    <td>{{ meeting[2] }}</td>  <!-- End Time -->
-    <td>{{ meeting[3] }}</td>  <!-- Employee Username -->
-    <td>{{ meeting[4] }}</td>  <!-- Manager Username -->
-  </tr>
-  {% endfor %}
-</table>
+          {% endif %}
+        </td>
+        <td>{{ meeting[1] }}</td> <td>{{ meeting[2] }}</td> <td>{{ meeting[3] }}</td> <td>{{ meeting[4] }}</td> </tr>
+      {% endfor %}
+    </table>
 
-
-
-
-</body>
-</html>
+    <script>
+        $(document).ready(function() {
+          $("#schedule-meeting-form").submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
+      
+            // Get form values
+            var meetingDate = $("#meeting_date").val();
+            var startTime = $("#start_time").val();
+            var endTime = $("#end_time").val();
+      
+            // Convert date string to Date object
+            var meetingDateObj = new Date(meetingDate);
+      
+            // Check if meeting date is after today
+            if (meetingDateObj <= new Date()) {
+              alert("Meeting date must be after today!");
+              return false; // Prevent form submission
+            }
+      
+            // Check if start time is before end time (convert to 24-hour format)
+            var startTimeParts = startTime.split(":");
+            var startTimeHours = parseInt(startTimeParts[0]);
+            var startTimeMinutes = parseInt(startTimeParts[1]);
+            var startTimeInMinutes = startTimeHours * 60 + startTimeMinutes;
+      
+            var endTimeParts = endTime.split(":");
+            var endTimeHours = parseInt(endTimeParts[0]);
+            var endTimeMinutes = parseInt(endTimeParts[1]);
+            var endTimeInMinutes = endTimeHours * 60 + endTimeMinutes;
+      
+            // Check if start time is before end time
+            if (startTimeInMinutes >= endTimeInMinutes) {
+              alert("Start time must be before end time!");
+              return false; // Prevent form submission
+            }
+      
+            // All validation checks passed, submit the form
+            this.submit(); // Submit the form after successful validation
+          });
+        });
+      </script>
+      
