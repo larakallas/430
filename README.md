@@ -52,7 +52,9 @@ Or CTRL + Click on the generated `http://127.0.0.1:5000` in the command line.
 
 
 To login in the manager account:
+
 Username: manager1
+
 Password: Pass1
 
 ## Database Setup
