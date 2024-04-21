@@ -672,27 +672,30 @@ def view_attendance():
 def create_announcement():
     if 'username' in session:
         if request.method == 'POST':
-            # Extract the announcement text from the form data
+            # Extract announcement text and manager username
             announcement_text = request.form['announcement_text']
-            
-            # Get the manager's username from the session
             manager_username = session['username']
-            
-            # Get the current date
+
+            # Get current date
             date_created = datetime.now().date()
-            
-            # Insert the announcement into the database
+
+            # Insert announcement into database
             c.execute("INSERT INTO announcements (manager_username, announcement, date_created) VALUES (?, ?, ?)",
                       (manager_username, announcement_text, date_created))
             conn.commit()
-            
-            # Redirect to the manager dashboard after successfully inserting the announcement
-            return redirect(url_for('manager_dashboard'))
+
+            # Set a success message for the template
+            flash("Announcement submitted successfully!", "success")
+
+            # Redirect to the manager dashboard with the success message
+            return redirect(url_for('create_announcement'))
         else:
             # Render the form to create an announcement
             return render_template('create_announcement.html')
     else:
         return redirect(url_for('login'))
+
+
 
 @app.route('/view_announcements')
 def view_announcements():
