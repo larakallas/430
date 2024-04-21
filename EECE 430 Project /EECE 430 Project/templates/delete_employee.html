@@ -9,17 +9,20 @@
     <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;"></body>
     <h2>Delete Employee Profile</h2>
     <form action="{{ url_for('delete_employee') }}" method="post">
-        <label for="employee_username">Enter Employee Username:</label>
-        <input type="text" id="employee_username" name="employee_username" required>
+        <label for="employee_username">Select Employee Username:</label>
+        <select id="employee_username" name="employee_username" required>
+            {% for employee in employees %}
+            <option value="{{ employee[0] }}">{{ employee[0] }}</option>
+            {% endfor %}
+        </select>
         <button type="submit">Delete</button>
     </form>
-    {% if error %}
-        <p>{{ error }}</p>
-        {% if error == 'Employee does not exist.' %}
-            <a href="{{ url_for('manager_dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
-        {% else %}
-            <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                alert("{{ messages[0] }}");
+            </script>
         {% endif %}
-    {% endif %}
+    {% endwith %}
 </body>
 </html>
