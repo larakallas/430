@@ -299,6 +299,13 @@ def scheduled_meetings():
         username = session['username']
         if request.method == 'POST':
             selected_date = request.form['selected_date']
+            today = datetime.date.today()
+
+            # Check if selected date is after today
+            if datetime.strptime(selected_date, '%Y-%m-%d').date() < today:
+                flash("Meeting date must be after today!", "error")
+                return render_template('scheduled_meetings.html')
+
             selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
             c.execute("SELECT * FROM availability WHERE employee_username = ? AND date = ?", (username, selected_date))
             meetings = c.fetchall()
@@ -309,6 +316,7 @@ def scheduled_meetings():
             return render_template('scheduled_meetings.html', meetings=meetings)
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/view_tasks', methods=['GET', 'POST'])
 def view_tasks():
