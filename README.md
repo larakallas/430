@@ -26,6 +26,7 @@ Open the command line (CMD) and input:
 ```bash
 git clone https://github.com/larakallas/430/
 ```
+Or just download the zip file.
 
 2. Navigate to the project directory:
 
@@ -48,6 +49,11 @@ python app.py
 
 Open your browser and navigate to `http://127.0.0.1:5000` to access the application.
 Or CTRL + Click on the generated `http://127.0.0.1:5000` in the command line.
+
+
+To login in the manager account:
+Username: manager1
+Password: Pass1
 
 ## Database Setup
 
