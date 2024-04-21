@@ -483,6 +483,10 @@ def add_employee():
 
 
 
+
+
+from datetime import date
+
 @app.route('/assign_task', methods=['GET', 'POST'])
 def assign_task():
     if 'username' in session:
@@ -490,8 +494,21 @@ def assign_task():
             manager_username = session['username']
             employee_username = request.form['employee_username']
             task_name = request.form['task_name']
-            start_date = request.form['start_date']  # Get start_date from the form
-            end_date = request.form['end_date']      # Get end_date from the form
+            start_date = request.form['start_date']
+            end_date = request.form['end_date']
+
+            # Validate date formats (assuming YYYY-MM-DD format)
+            try:
+                start_date_obj = date.fromisoformat(start_date)
+                end_date_obj = date.fromisoformat(end_date)
+            except ValueError:
+                return "Invalid date format. Please use YYYY-MM-DD."
+
+            # Check for past start date and invalid date order
+            if start_date_obj < date.today():
+                return "Start date cannot be before today."
+            elif start_date_obj > end_date_obj:
+                return "Start date cannot be after end date."
 
             # Check if the task is already assigned to the employee
             c.execute("SELECT * FROM tasks WHERE employee_username = ? AND manager_username = ? AND task_name = ?",
@@ -507,11 +524,9 @@ def assign_task():
             return redirect(url_for('manager_dashboard'))
         else:
             # Handle GET request (rendering form or other content)
-            # For example, you could render a form to assign a task here
             return render_template('assign_task.html')
     else:
         return redirect(url_for('login_page'))
-
 
 
 
