@@ -4,105 +4,6 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <title>Manager Dashboard</title>
-    <style>
-        /* CSS styles for buttons and dropdown */
-        .button-85 {
-            padding: 0.6em 2em;
-            border: none;
-            outline: none;
-            color: rgb(255, 255, 255);
-            background: #111;
-            cursor: pointer;
-            position: relative;
-            z-index: 0;
-            border-radius: 10px;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            transform-origin: center; /* Keep the button stationary while enlarging */
-            margin: 10px; /* Added spacing between buttons */
-            display: inline-block; /* Ensures buttons are on the same line */
-        }
-
-        .button-85:hover {
-    transform: scale(1.1); /* Zoom effect */
-    transition: transform 0.3s ease; /* Smooth transition */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional: Add a shadow for depth */
-}
-
-
-        .button-85:before {
-            content: "";
-            background: linear-gradient(
-                45deg,
-                #ff0000,
-                #ff7300,
-                #fffb00,
-                #48ff00,
-                #00ffd5,
-                #002bff,
-                #7a00ff,
-                #ff00c8,
-                #ff0000
-            );
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            background-size: 400%;
-            z-index: -1;
-            filter: blur(5px);
-            -webkit-filter: blur(5px);
-            width: calc(100% + 4px);
-            height: calc(100% + 4px);
-            animation: glowing-button-85 20s linear infinite;
-            transition: opacity 0.3s ease-in-out;
-            border-radius: 10px;
-        }
-
-        @keyframes glowing-button-85 {
-            0% {
-                background-position: 0 0;
-            }
-            50% {
-                background-position: 0 0;
-            }
-            100% {
-                background-position: 0 0;
-            }
-        }
-
-        .button-85:after {
-            z-index: -1;
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #222;
-            left: 0;
-            top: 0;
-            border-radius: 10px;
-        }
-
-        .action-button-container {
-            margin-top: 20px; /* Added spacing between buttons and picture */
-            text-align: center;
-        }
-
-        select {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-        }
-
-
-        body {
-            background-image: url("{{ url_for('static', filename='background.jpg') }}");
-            background-size: cover;
-            background-position: center;
-        }
-    </style>
 </head>
 <body>
 <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
@@ -144,8 +45,5 @@
         <button class="button-85" role="button" onclick="location.href='{{ url_for('logout') }}'">Logout</button>
     </div>
 
-    <script>
-        // JS functionality here, if needed
-    </script>
 </body>
 </html>

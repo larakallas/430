@@ -35,37 +35,19 @@
 <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
     <h1>Welcome, Employee!</h1>
     <!-- Display assigned tasks -->
-    <h2>Assigned Tasks</h2>
-    <button onclick="window.location.href='{{ url_for('view_tasks') }}'">View Assigned Tasks</button>
-
-    <h2>Announcements</h2>
-    <button onclick="window.location.href='{{ url_for('view_announcements') }}'">View Announcements</button>
-
-    <!-- Display scheduled meetings -->
-    <h2>Send and receive messages</h2>
-    <p> <button onclick="window.location.href='{{ url_for('messaging') }}'">Messaging</button></p>
-
-    <!-- Link to the meeting scheduling page -->
-    <h2>Schedule Meeting</h2>
-    <button onclick="window.location.href='{{ url_for('scheduled_meetings') }}'">Scheduled Meeting</button>
-
-    <!-- Link to the attendance page -->
-    <h2>Attendance</h2>
-    <button onclick="window.location.href='{{ url_for('submit_attendance') }}'">Go to Attendance Page</button>
-
-    <!-- Link to the document upload page -->
-    <h2>Upload Document</h2>
-    <button onclick="window.location.href='{{ url_for('upload_document') }}'">Upload Document</button>
-
-    <h2>Feedback from Managers</h2>
-    <button onclick="window.location.href='{{ url_for('view_feedback') }}'">View Feedback</button>
-
-    <h2>Employee Courses</h2>
-    <button onclick="window.location.href='{{ url_for('employee_courses') }}'">View Courses</button>
-
+    <div class="button-container">
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('view_tasks') }}'">View Assigned Tasks</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('view_announcements') }}'">View Announcements</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('messaging') }}'">Messaging</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('scheduled_meetings') }}'">Scheduled Meeting</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('submit_attendance') }}'">Go to Attendance Page</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('upload_document') }}'">Upload Document</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('view_feedback') }}'">View Feedback</button>
+        <button class="button-85" role="button" onclick="window.location.href='{{ url_for('employee_courses') }}'">View Courses</button>
+    
 
     <!-- Go back button -->
-    <button onclick="goBack()">Go Back</button>
+    <button class="button-85" role="button" onclick="goBack()">Go Back</button>
     <script>
         // Function to go back to the previous page
         function goBack() {
@@ -74,6 +56,7 @@
     </script>
 
     <!-- Logout link -->
-    <button onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+    <button class="button-85" role="button" onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+</div>
 </body>
 </html>

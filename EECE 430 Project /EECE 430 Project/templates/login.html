@@ -13,6 +13,7 @@
     {% if error %}
         <p>{{ error }}</p>
     {% endif %}
+    <div class="button-container">
     <form method="post" action="{{ url_for('login') }}">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
@@ -25,6 +26,7 @@
         </select><br>
         <input type="submit" value="Login">
     </form>
+</div>
     
     <!-- Change Password button -->
     <form method="get" action="{{ url_for('change_password') }}">
