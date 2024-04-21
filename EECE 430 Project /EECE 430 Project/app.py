@@ -499,6 +499,7 @@ def add_employee():
 
 
 
+
 from datetime import date
 
 @app.route('/assign_task', methods=['GET', 'POST'])
@@ -700,12 +701,13 @@ def create_announcement():
 @app.route('/view_announcements')
 def view_announcements():
     if 'username' in session:
-        # Fetch all announcements from the database
-        c.execute("SELECT * FROM announcements")
+        # Fetch all announcements from the database (order by date)
+        c.execute("SELECT * FROM announcements ORDER BY date_created DESC")
         announcements = c.fetchall()
         return render_template('view_announcement.html', announcements=announcements)
     else:
         return redirect(url_for('login'))
+
 @app.route('/messaging', methods=['GET', 'POST'])
 def messaging():
     if 'username' in session:
@@ -739,10 +741,7 @@ from flask import render_template, request, session, redirect, url_for
 def delete_employee():
     if 'username' in session:
         if request.method == 'POST':
-        
             manager_username = session['username']
-
-            # Get the username of the employee to be deleted from the form data
             employee_username = request.form['employee_username']
 
             # Check if the employee exists
@@ -752,17 +751,18 @@ def delete_employee():
             if employee:
                 c.execute("DELETE FROM employees WHERE username = ?", (employee_username,))
                 conn.commit()
-
                 
                 c.execute("DELETE FROM tasks WHERE employee_username = ?", (employee_username,))
                 conn.commit()
 
-                return redirect(url_for('manager_dashboard'))
+                flash("Employee deleted successfully.", "success")
+                return redirect(url_for('delete_employee'))
             else:
-                error = 'Employee does not exist.'
-                return render_template('delete_employee.html', error=error)
+                flash("Employee does not exist.", "error")
+                return redirect(url_for('delete_employee'))
         else:
-            return render_template('delete_employee.html', error=None) 
+            employees = c.execute("SELECT username FROM employees").fetchall()
+            return render_template('delete_employee.html', employees=employees, error=None) 
     else:
         error = 'You must be logged in to perform this action.'
         return render_template('delete_employee.html', error=error)
