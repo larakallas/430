@@ -1,22 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-    <title>Add Employee</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Add Employee</title>
 </head>
 <body>
-    <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;"></body>
+  <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;">
     <h2>Add Employee</h2>
-    <form method="POST" action="{{ url_for('add_employee') }}">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <label for="department">Department:</label>
-        <input type="text" id="department" name="department" required><br><br>
-        <button type="submit" name="add_employee">Add Employee</button>
+    <form id="add-employee-form" method="POST" action="{{ url_for('add_employee') }}">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required><br><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required><br><br>
+      <label for="department">Department:</label>
+      <input type="text" id="department" name="department" required><br><br>
+      <button type="submit">Add Employee</button>
     </form>
-</body>
+
+    <script>
+      $(document).ready(function() {
+        $("#add-employee-form").submit(function(event) {
+          event.preventDefault(); // Prevent default form submission
+
+          $.ajax({
+            url: "/add_employee",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(data) {
+              if (data.message) {
+                // Create and display the popup content
+                var popupHtml = `
+                  <div id="username-popup">
+                    <h2>Error</h2>
+                    <p>${data.message}</p>
+                    <button id="close-popup">Close</button>
+                  </div>
+                `;
+                $("body").append(popupHtml);
+
+                // Add CSS styling for the popup (optional)
+
+                $("#close-popup").click(function() {
+                  $("#username-popup").remove();
+                });
+              } else {
+                // User added successfully (redirect handled by Flask)
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              alert("Error adding employee: " + textStatus + errorThrown);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
