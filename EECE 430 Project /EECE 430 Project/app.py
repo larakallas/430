@@ -469,6 +469,12 @@ def add_employee():
             password = request.form['password']
             department = request.form['department']
 
+            # Check for existing username
+            c.execute("SELECT * FROM employees WHERE username = ?", (username,))
+            existing_user = c.fetchone()
+            if existing_user:
+                return jsonify(message="Username already exists!")
+
             c.execute("INSERT INTO employees (username, password, department) VALUES (?, ?, ?)",
                       (username, password, department))
             conn.commit()
