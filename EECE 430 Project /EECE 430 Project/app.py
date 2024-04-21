@@ -531,22 +531,28 @@ def assign_task():
 
 
 
+from flask import flash
+
 @app.route('/submit_attendance', methods=['GET', 'POST'])
 def submit_attendance():
     if 'username' in session:
         if request.method == 'POST':
             username = session['username']
-            status = request.form.get('status')  # Use .get() to safely access the 'status' key
+            status = request.form.get('status')
             today = datetime.now().date()
             c.execute("INSERT INTO employee_attendance (employee_username, date, status) VALUES (?, ?, ?)",
                       (username, today, status))
             conn.commit()
-            return redirect(url_for('employee_dashboard'))
+
+            # Return success message as JSON
+            return jsonify(message="Attendance submitted successfully!")
         else:
-            # If the request method is GET, render the attendance submission form
+            # Handle GET request (rendering form or other content)
             return render_template('submit_attendance.html')
     else:
         return redirect(url_for('login'))
+
+
 
 
     
