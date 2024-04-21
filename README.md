@@ -55,7 +55,7 @@ To login in the manager account:
 
 Username: manager1
 
-Password: Pass1
+Password: pass1
 
 ## Database Setup
 
