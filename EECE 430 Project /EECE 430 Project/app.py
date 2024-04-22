@@ -860,5 +860,38 @@ def employee_courses():
     else:
         return redirect(url_for('login'))
 
+@app.route('/task_statistics', methods=['GET'])
+def task_statistics():
+    if 'username' in session:
+        # Assuming you have a database connection named 'conn'
+        cursor = conn.cursor()
+
+        # Fetch the number of tasks assigned to each employee
+        cursor.execute("SELECT employee_username, COUNT(*) FROM tasks GROUP BY employee_username")
+        task_counts = cursor.fetchall()
+
+        # Analyze the task counts to identify employees with fewer tasks
+        min_tasks = float('inf')
+        max_tasks = float('-inf')
+        suggested_employee = None
+
+        for employee, count in task_counts:
+            if count < min_tasks:
+                min_tasks = count
+            if count > max_tasks:
+                max_tasks = count
+                suggested_employee = employee
+
+        # Prepare the suggestion message
+        if suggested_employee:
+            suggestion = f"Suggest assigning tasks to {suggested_employee} as they have fewer tasks compared to others."
+        else:
+            suggestion = "All employees have an equal number of tasks."
+
+        return render_template('task_statistics.html', task_counts=task_counts, suggestion=suggestion)
+    else:
+        return redirect(url_for('login'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
