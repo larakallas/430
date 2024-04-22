@@ -4,10 +4,79 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <title>Login</title>
+    <style>
+        /* Style for the clock */
+        #clock {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style for the additional paragraph */
+        .additional-info {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        /* Style for the review box */
+        .review-box {
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .review {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: gold;
+        }
+    </style>
 </head>
 <body>
     <body style="background-image: url('static/background.jpg'); background-repeat: no-repeat;background-size: cover; background-attachment: fixed;"></body>
     <h1>Welcome to the Attendance System</h1>
+    <p>This system helps you manage attendance efficiently and effortlessly. Keep track of attendance records with ease!</p>
+    <p class="additional-info">We are the best rated in the region with <span class="stars">★★★★☆</span> (4.5/5 stars).</p>
+    <div class="review-box">
+        <p class="review">Kesla's Manager Review:</p>
+        <p class="review">"The best system for our employees."</p>
+        <p class="review"> Rated:</p>
+        <p class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+    </div>
+    <div class="review-box">
+        <p class="review">VMW's Manager Review:</p>
+        <p class="review">"The system increased the productivity of our employees."</p>
+        <p class="review"> Rated:</p>
+        <p class="stars">&#9733;&#9733;&#9733;&#9733;</p>
+    </div>
+    <p id="clock"></p> <!-- Clock will be displayed here -->
     <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+
+    <script>
+        // JavaScript function to display current time
+        function displayTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        // Update time every second
+        setInterval(displayTime, 1000);
+
+        // Initial call to display time when the page loads
+        displayTime();
+    </script>
 </body>
 </html>
