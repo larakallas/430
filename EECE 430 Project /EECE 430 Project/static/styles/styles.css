@@ -229,6 +229,40 @@ button[type="submit"] {
 
 
 
+
+.review-box {
+    border: 10px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 60%;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .review {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .stars {
+    font-size: 20px;
+    color: gold;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* CSS styles for buttons and dropdown */
 .button-85 {
     width: 60%;
