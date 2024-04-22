@@ -24,7 +24,7 @@ This is a simple Employee Management System built with Flask, SQLite, and WTForm
 1. Clone the repository to your local machine:
 Open the command line (CMD) and input:
 ```bash
-git clone https://github.com/larakallas/430/
+git clone https://github.com/larakallas/430-spr23-24-team-3/
 ```
 Or just download the zip file.
 
