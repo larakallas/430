@@ -23,7 +23,7 @@
             <option value="{{ url_for('view_pdf_documents') }}">View Employee Documents</option>
             <option value="{{ url_for('view_calendar') }}">View Calendar</option>
             <option value="{{ url_for('delete_employee') }}">Delete Employee Profile</option>
-            <option value="{{ url_for('create_course') }}">Create courses</option>
+            <option value="{{ url_for('task_statistics') }}">Create courses</option>
             <option value="{{ url_for('logout') }}">Logout</option>
         </select>
     </div>
@@ -41,7 +41,7 @@
         <button class="button-85" role="button" onclick="location.href='{{ url_for('view_pdf_documents') }}'">View Employee Documents</button>
         <button class="button-85" role="button" onclick="location.href='{{ url_for('view_calendar') }}'">View Calendar</button>
         <button class="button-85" role="button" onclick="location.href='{{ url_for('delete_employee') }}'">Delete Employee Profile</button>
-        <button class="button-85" role="button" onclick="location.href='{{ url_for('create_course') }}'">Create courses</button>
+        <button class="button-85" role="button" onclick="location.href='{{ url_for('task_statistics') }}'">View Statistics</button>
         <button class="button-85" role="button" onclick="location.href='{{ url_for('logout') }}'">Logout</button>
     </div>
 
