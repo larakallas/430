@@ -59,8 +59,9 @@
         <p class="stars">&#9733;&#9733;&#9733;&#9733;</p>
     </div>
     <p id="clock"></p> <!-- Clock will be displayed here -->
-    <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
-
+    <div class="action-button-container">
+    <button class="button-85" role="button" onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+</div>
     <script>
         // JavaScript function to display current time
         function displayTime() {
