@@ -859,7 +859,6 @@ def employee_courses():
         return render_template('employee_courses.html', courses=courses)
     else:
         return redirect(url_for('login'))
-
 @app.route('/task_statistics', methods=['GET'])
 def task_statistics():
     if 'username' in session:
@@ -872,14 +871,11 @@ def task_statistics():
 
         # Analyze the task counts to identify employees with fewer tasks
         min_tasks = float('inf')
-        max_tasks = float('-inf')
         suggested_employee = None
 
         for employee, count in task_counts:
             if count < min_tasks:
                 min_tasks = count
-            if count > max_tasks:
-                max_tasks = count
                 suggested_employee = employee
 
         # Prepare the suggestion message
@@ -891,6 +887,7 @@ def task_statistics():
         return render_template('task_statistics.html', task_counts=task_counts, suggestion=suggestion)
     else:
         return redirect(url_for('login'))
+
 
 
 if __name__ == '__main__':
